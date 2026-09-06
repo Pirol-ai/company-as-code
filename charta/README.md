@@ -1,16 +1,25 @@
 # charta
 
-Reference toolchain for Company as Code. **Not started — begins at M1** (after the format has
-survived dogfooding on a real company repo).
+Reference toolchain for Company as Code. One Rust crate, single static binary.
 
-Planned: one Rust core (single static binary; WASM build for embedding; thin npm wrapper) exposing
+## Implemented (M1 slice 1)
 
-| verb | what |
+| verb | status |
 |---|---|
-| `charta validate` | conformance levels L0–L3 (opt-in L4 LLM-judge); JSON output, CI exit codes |
-| `charta graph` / `charta query` | resolve subgraphs, backlinks, orphans, impact paths — fixed verbs, JSON out, no query language |
-| `charta plan` | graph diff between two git refs, with impact set |
-| `charta fmt` | canonical formatting, clean diffs |
-| MCP server | resolve/validate/query (plan later) — every MCP-capable agent becomes a read runtime |
+| `charta validate [path] [--json]` | ✅ L0 (well-formed: manifest, envelope, id format, uniqueness) · L1 (referential integrity, typed + prose refs) · L2 (per-kind required fields). Exit 1 on errors. |
+| `charta graph [path]` | ✅ nodes + edges as JSON (typed refs and prose links) |
+| `charta query orphans [path]` | ✅ resources nothing references |
+| `charta query backlinks <kind/id> [path]` | ✅ incoming edges |
+| `charta plan` | ⏳ graph diff between git refs — M3 |
+| `charta fmt` | ⏳ |
+| MCP server | ⏳ next M1 slice — resolve/validate/query for any MCP-capable agent |
+
+Conformance: `cargo test` runs every fixture in [`../conformance/fixtures/`](../conformance/fixtures/)
+— valid ones must be green, invalid ones must produce exactly the errors their `expected.json`
+declares. The suite is the standard; code follows fixtures.
+
+Resource discovery rule (v0): a markdown file is a resource iff its frontmatter has an `api:` key
+starting with `company-as-code.org/`. Files with foreign or no frontmatter are ignored — this is
+what lets the format live inside an existing repo without claiming every file.
 
 Anti-goals mirror the spec: no DSL, no workflow engine, no UI, no hosted anything.
