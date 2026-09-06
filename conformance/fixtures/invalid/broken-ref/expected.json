@@ -1,0 +1,6 @@
+{
+  "level": "L1",
+  "errors": [
+    { "code": "unresolved-ref", "resource": "process/invoicing", "field": "owner", "target": "role/ghost" }
+  ]
+}
