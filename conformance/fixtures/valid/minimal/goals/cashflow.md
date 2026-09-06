@@ -1,5 +1,5 @@
 ---
-api: companyascode.org/v0
+api: company-as-code.org/v0
 kind: goal
 id: cashflow
 name: Positive operating cashflow

@@ -20,7 +20,7 @@ The on-disk format **is** the interchange format. There is no export step; porta
 
 ```yaml
 # company.yaml
-api: companyascode.org/v0
+api: company-as-code.org/v0
 name: Example GmbH
 extensions: []          # namespaces of extension kinds in use, e.g. ["x-coos"]
 ```
@@ -31,7 +31,7 @@ Every resource file begins with YAML frontmatter:
 
 ```markdown
 ---
-api: companyascode.org/v0
+api: company-as-code.org/v0
 kind: process
 id: invoicing
 name: Monthly invoicing
