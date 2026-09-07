@@ -21,6 +21,16 @@ validator and a demo — never before.
 | [`conformance/`](conformance/) | Executable fixtures — the suite, not the prose, is the standard. |
 | [`charta/`](charta/) | Reference toolchain (`validate` · `graph` · `query` · `plan` · MCP server). Not started; begins at M1. |
 
+## OKF compatible
+
+Company as Code is **100% compatible with Google's
+[Open Knowledge Format (OKF)](https://github.com/GoogleCloudPlatform/knowledge-catalog/blob/main/okf/SPEC.md)**:
+every resource is a conformant OKF concept (`type`, `title`, `description`, `tags` carry OKF
+semantics; unknown keys are preserved in both directions), and OKF concepts live untouched in the
+same tree — charta only validates files that opt in via the `api` key. Company as Code is a strict
+*profile* of OKF: it adds identity (`id`), `type/id` addressing, typed references with mandatory
+resolution, and per-type required fields on top of OKF's tolerant substrate.
+
 ## Design tenets
 
 1. **Prose primary, schema minimal.** Process semantics are one page of natural language; structure

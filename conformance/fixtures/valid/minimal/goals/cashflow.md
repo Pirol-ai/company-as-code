@@ -1,8 +1,8 @@
 ---
 api: company-as-code.org/v0
-kind: goal
+type: goal
 id: cashflow
-name: Positive operating cashflow
+title: Positive operating cashflow
 owner: role/finance
 ---
 

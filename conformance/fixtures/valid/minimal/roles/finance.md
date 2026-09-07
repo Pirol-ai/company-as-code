@@ -1,8 +1,8 @@
 ---
 api: company-as-code.org/v0
-kind: role
+type: role
 id: finance
-name: Finance
+title: Finance
 ---
 
 Owns money in and money out. Held by the founder; an agent may draft invoices and reports

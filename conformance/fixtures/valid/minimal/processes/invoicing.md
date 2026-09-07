@@ -1,8 +1,8 @@
 ---
 api: company-as-code.org/v0
-kind: process
+type: process
 id: invoicing
-name: Monthly invoicing
+title: Monthly invoicing
 owner: role/finance
 serves: [goal/cashflow]
 ---

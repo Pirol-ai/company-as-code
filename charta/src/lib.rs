@@ -18,9 +18,9 @@ const SKIP_DIRS: &[&str] = &[".git", "node_modules", "target", "dist"];
 
 #[derive(Debug, Clone, Serialize)]
 pub struct Resource {
-    pub kind: String,
+    pub r#type: String,
     pub id: String,
-    pub name: Option<String>,
+    pub title: Option<String>,
     pub file: String,
     #[serde(skip)]
     pub fields: serde_yaml::Mapping,
@@ -30,7 +30,7 @@ pub struct Resource {
 
 impl Resource {
     pub fn addr(&self) -> String {
-        format!("{}/{}", self.kind, self.id)
+        format!("{}/{}", self.r#type, self.id)
     }
 }
 
@@ -50,10 +50,10 @@ pub struct Finding {
 
 #[derive(Debug, Serialize)]
 pub struct Node {
-    pub kind: String,
+    pub r#type: String,
     pub id: String,
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub name: Option<String>,
+    pub title: Option<String>,
     pub file: String,
 }
 
@@ -268,18 +268,18 @@ pub fn load(root: &Path) -> Workspace {
                 format!("unknown api version '{api}' (this build knows {API_V0})"),
             ));
         }
-        let kind = get("kind");
+        let ty = get("type");
         let id = get("id");
-        match (&kind, &id) {
+        match (&ty, &id) {
             (None, _) => {
                 ws.findings.push(finding(
                     "L0",
                     "error",
-                    "missing-kind",
+                    "missing-type",
                     Some(rel.clone()),
-                    Some("kind"),
+                    Some("type"),
                     None,
-                    "resource envelope has no 'kind'".into(),
+                    "resource envelope has no 'type'".into(),
                 ));
                 continue;
             }
@@ -297,30 +297,30 @@ pub fn load(root: &Path) -> Workspace {
             }
             _ => {}
         }
-        let (kind, id) = (kind.unwrap(), id.unwrap());
+        let (ty, id) = (ty.unwrap(), id.unwrap());
         if !valid_id(&id) {
             ws.findings.push(finding(
                 "L0",
                 "error",
                 "invalid-id",
-                Some(format!("{kind}/{id}")),
+                Some(format!("{ty}/{id}")),
                 Some("id"),
                 None,
                 format!("id '{id}' must be kebab-case [a-z0-9-]"),
             ));
         }
-        if !CORE_KINDS.contains(&kind.as_str()) && !kind.starts_with("x-") {
+        if !CORE_KINDS.contains(&ty.as_str()) && !ty.starts_with("x-") {
             ws.findings.push(finding(
                 "L0",
                 "warning",
-                "unknown-kind",
-                Some(format!("{kind}/{id}")),
-                Some("kind"),
+                "unknown-type",
+                Some(format!("{ty}/{id}")),
+                Some("type"),
                 None,
-                format!("kind '{kind}' is neither a core kind nor x- namespaced (preserved, not validated)"),
+                format!("type '{ty}' is neither a core type nor x- namespaced (preserved, not validated)"),
             ));
         }
-        let addr = format!("{kind}/{id}");
+        let addr = format!("{ty}/{id}");
         if let Some(other) = seen.get(&addr) {
             ws.findings.push(finding(
                 "L0",
@@ -335,9 +335,9 @@ pub fn load(root: &Path) -> Workspace {
             seen.insert(addr, rel.clone());
         }
         ws.resources.push(Resource {
-            kind,
+            r#type: ty,
             id,
-            name: get("name"),
+            title: get("title"),
             file: rel,
             fields: mapping,
             prose_refs: scan_prose_refs(body),
@@ -363,7 +363,7 @@ pub fn validate(ws: &mut Workspace) {
                             Some(r.addr()),
                             Some(field),
                             Some(s),
-                            format!("'{s}' is not a kind/id reference"),
+                            format!("'{s}' is not a type/id reference"),
                         ));
                     } else if !addrs.contains(s) {
                         new.push(finding(
@@ -425,9 +425,9 @@ pub fn validate(ws: &mut Workspace) {
                 ));
             }
         }
-        // L2 — per-kind required fields
-        for (kind, req) in REQUIRED_FIELDS {
-            if r.kind == *kind && !r.fields.contains_key(serde_yaml::Value::from(*req)) {
+        // L2 — per-type required fields
+        for (ty, req) in REQUIRED_FIELDS {
+            if r.r#type == *ty && !r.fields.contains_key(serde_yaml::Value::from(*req)) {
                 new.push(finding(
                     "L2",
                     "error",
@@ -435,7 +435,7 @@ pub fn validate(ws: &mut Workspace) {
                     Some(r.addr()),
                     Some(req),
                     None,
-                    format!("kind '{kind}' requires field '{req}'"),
+                    format!("type '{ty}' requires field '{req}'"),
                 ));
             }
         }
@@ -487,9 +487,9 @@ pub fn graph(ws: &Workspace) -> Graph {
             .resources
             .iter()
             .map(|r| Node {
-                kind: r.kind.clone(),
+                r#type: r.r#type.clone(),
                 id: r.id.clone(),
-                name: r.name.clone(),
+                title: r.title.clone(),
                 file: r.file.clone(),
             })
             .collect(),
@@ -501,7 +501,7 @@ pub fn orphans(g: &Graph) -> Vec<String> {
     let referenced: BTreeSet<&String> = g.edges.iter().map(|e| &e.to).collect();
     g.nodes
         .iter()
-        .map(|n| format!("{}/{}", n.kind, n.id))
+        .map(|n| format!("{}/{}", n.r#type, n.id))
         .filter(|a| !referenced.contains(a))
         .collect()
 }
