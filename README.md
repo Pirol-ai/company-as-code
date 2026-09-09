@@ -62,9 +62,10 @@ git clone https://github.com/Pirol-ai/company-as-code && cd company-as-code
 bash demo/demo.sh
 ```
 
-The demo deletes a role from a small example company ([`demo/company/`](demo/company/) — open
-it, it is just files). `charta validate` finds every broken reference. `charta plan` shows what
-the change would affect — before it happens.
+The demo uses a small example company, a coffee roastery ([`demo/company/`](demo/company/) —
+open it, it is just files). It deletes the Operations role — the person who runs invoicing and
+customer support. Suddenly three processes have no owner. `charta validate` finds every broken
+reference. `charta plan` shows what the change would affect — before it happens.
 
 Then start your own company from [`template/`](template/):
 
@@ -76,8 +77,14 @@ charta plan .              # what would your uncommitted change affect?
 charta mcp .               # serve the company graph to any MCP-capable agent
 ```
 
-Write down what a new coworker would need to know on day one — every agent session is that new
-coworker. Start small. Add more only when you need it.
+**You do not write this alone — your agent writes it with you.** Tell your agent how your
+company works, in your own words. The agent writes the files, runs `charta validate`, and fixes
+what is broken. Start with what a new coworker would need to know on day one — every agent
+session is that new coworker.
+
+The description then grows while you work: when an agent asks a question that only you can
+answer, that answer is a missing file. The agent adds it, validates it, and never asks again.
+Start small. Add more only when you need it.
 
 ## The toolchain
 
