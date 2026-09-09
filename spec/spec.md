@@ -5,6 +5,44 @@
 > authoritative form. Prose here describes intent; where prose and fixtures disagree, fixtures
 > win. Spec text: CC-BY-4.0 ([LICENSE](LICENSE)); reference implementation: Apache-2.0.
 
+## Overview
+
+**Company as Code** is a specification for describing how a company works — its goals, roles,
+processes, policies, and products — as plain markdown files under version control: readable by
+people, followed by AI agents, and verified like code.
+
+## Purpose
+
+A company's operating knowledge lives in heads, chat threads, and wiki pages that rot. That was
+survivable when a new coworker arrived once a quarter; with AI agents, a new coworker arrives at
+the start of every session, knowing nothing. And changes to how the company works are announced,
+never reviewed — their consequences are discovered afterwards.
+
+Company as Code addresses this with one declarative artifact:
+
+- **Readable without tools.** Every resource is a markdown file; if you can `cat` it, you can
+  read it. Semantics stay natural language — agents tolerate ambiguity; formal notations
+  (BPMN and its relatives) died of the precision they demanded.
+- **Typed just enough.** A small frontmatter envelope (`type`, `id`, references) turns the files
+  into a graph: this process serves that goal, is owned by that role, is bounded by that policy.
+- **Verified like code.** The skeleton is validatable — references must resolve, required fields
+  must exist — so the description cannot break silently, and changes become reviewable diffs
+  with a computable blast radius (`plan`).
+- **Diffable, portable, owned.** Git is the transport; export is `git clone`. The description
+  belongs to the company, never to a tool.
+
+## When to use it — and when not
+
+Use Company as Code for the **operating model**: the durable statements about how the company
+works, meant to be read by every (human or machine) coworker, changed deliberately, and audited.
+
+Do not use it for things that are not operating model: one-off tasks and tickets (issue
+trackers), transactional records like contacts and invoices (databases, or record formats),
+knowledge *about* data and systems ([OKF](https://github.com/GoogleCloudPlatform/knowledge-catalog/blob/main/okf/SPEC.md)'s
+domain — see §8; both live happily in one repository), or culture and judgment, which no schema
+carries. A description should hold what a new coworker needs on day one — and grow from
+incidents, not ambition.
+
 ## 1. Artifact
 
 A company description is a directory tree under version control:
