@@ -30,6 +30,10 @@ charta mcp .               # give any MCP-capable agent the company graph
 Then make [`template/`](template/) yours: describe what a new coworker would need on day one —
 every agent session is that coworker.
 
+**See it break first:** [`demo/`](demo/) holds a small described company and a 30-second story —
+`bash demo/demo.sh` — where a role vanishes, `validate` catches it, and `plan` shows the blast
+radius before anything lands.
+
 ## Layout
 
 | Path | What |
