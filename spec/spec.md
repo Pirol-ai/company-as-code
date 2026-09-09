@@ -1,8 +1,9 @@
 # Company as Code — specification
 
-> **Working draft, v0.** Nothing in this document is normative yet. The spec is extracted from
+> **Working draft, v0 — freezes at the first public release.** The spec is extracted from
 > dogfooding (M0–M3), and the conformance suite in [`../conformance/`](../conformance/) is its
-> authoritative form. Prose here describes intent; where prose and fixtures disagree, fixtures win.
+> authoritative form. Prose here describes intent; where prose and fixtures disagree, fixtures
+> win. Spec text: CC-BY-4.0 ([LICENSE](LICENSE)); reference implementation: Apache-2.0.
 
 ## 1. Artifact
 

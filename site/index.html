@@ -1,0 +1,96 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Company as Code</title>
+<meta name="description" content="Describe your company once — every AI agent works by your rules. An open standard: plain markdown files, verified like code.">
+<style>
+  :root {
+    --bg: #ffffff; --fg: #1a1a1a; --muted: #6b6b6b; --accent: #b45309;
+    --card: #f6f4f0; --border: #e5e1da; --code: #f0ede7;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root { --bg: #141311; --fg: #ece9e4; --muted: #a09a90; --accent: #e8a344;
+            --card: #1d1b18; --border: #2c2925; --code: #201e1a; }
+  }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--bg); color: var(--fg);
+         font: 17px/1.65 -apple-system, "Segoe UI", system-ui, sans-serif; }
+  main { max-width: 680px; margin: 0 auto; padding: 4.5rem 1.25rem 3rem; }
+  h1 { font-size: 2.1rem; line-height: 1.2; margin: 0 0 .75rem; letter-spacing: -.02em; }
+  h2 { font-size: 1.15rem; margin: 2.75rem 0 .75rem; }
+  p { margin: .75rem 0; }
+  .sub { color: var(--muted); font-size: 1.1rem; }
+  .tag { color: var(--accent); font-weight: 600; font-size: .85rem;
+         text-transform: uppercase; letter-spacing: .08em; }
+  pre { background: var(--code); border: 1px solid var(--border); border-radius: 8px;
+        padding: .9rem 1rem; overflow-x: auto; font-size: .85rem; line-height: 1.55; }
+  code { font-family: ui-monospace, "SF Mono", Menlo, monospace; }
+  p > code, li > code { background: var(--code); padding: .1em .35em; border-radius: 4px; font-size: .85em; }
+  ul { padding-left: 1.2rem; } li { margin: .4rem 0; }
+  .cards { display: grid; gap: .75rem; margin: 1rem 0; }
+  .card { background: var(--card); border: 1px solid var(--border); border-radius: 10px; padding: .9rem 1.1rem; }
+  .card b { display: block; margin-bottom: .2rem; }
+  a { color: var(--accent); }
+  footer { margin-top: 3.5rem; padding-top: 1.25rem; border-top: 1px solid var(--border);
+           color: var(--muted); font-size: .9rem; }
+</style>
+</head>
+<body>
+<main>
+  <div class="tag">Company as Code</div>
+  <h1>Describe your company once —<br>every AI agent works by your rules.</h1>
+  <p class="sub">An open standard for writing down how your company works — goals, roles,
+  processes, policies — as plain markdown files in git. Verified like code. Followed by agents.</p>
+
+  <h2>The problem</h2>
+  <p>How your company works lives in your head, in chat threads, and in wiki pages nobody
+  updates. That was survivable when a new coworker arrived once a quarter. Now every AI agent
+  session is a new coworker — one that shows up a hundred times a day, knowing nothing.</p>
+
+  <h2>What you get</h2>
+  <div class="cards">
+    <div class="card"><b>Agents act by your rules</b>
+      An agent booking your invoices follows <em>your</em> invoicing process — and stops where
+      your policy says a human must approve.</div>
+    <div class="card"><b>Changes become reviewable</b>
+      "Invoices go out on the 1st now" turns into a diff you can see and approve — plan before
+      apply, the way infrastructure teams have worked for a decade.</div>
+    <div class="card"><b>Nothing breaks silently</b>
+      Delete a role three processes depend on, and the check fails before the change lands —
+      not three weeks later.</div>
+  </div>
+
+  <h2>charta — the toolchain</h2>
+<pre><code>charta validate .   # is the description intact? every reference must resolve
+charta query .      # who owns this? what serves nothing?
+charta plan .       # what would this change touch — before it happens
+charta mcp .        # serve the company graph to any MCP-capable agent</code></pre>
+
+  <p><em>"So it's just markdown with a linter?"</em> Exactly — that's the point. You start in
+  two hours, keep your editor and your git tooling, and can leave anytime: the description
+  belongs to you, not to a tool. Export is <code>git clone</code>. 100% compatible with Google's
+  <a href="https://github.com/GoogleCloudPlatform/knowledge-catalog/blob/main/okf/SPEC.md">Open
+  Knowledge Format</a>.</p>
+
+  <h2>Why now</h2>
+  <p>People have tried this before — BPMN, handbooks, wikis. They all died the same death:
+  nothing read them. AI agents change the equation: they read the description on every task,
+  follow it, and notice when reality drifts away from it. For the first time, the company
+  handbook has a reader that never skips a page.</p>
+
+  <h2>Install</h2>
+<pre><code>brew install pirol-ai/tap/charta
+npm i -g @pirol/charta</code></pre>
+  <p>Start from the <a href="https://github.com/Pirol-ai/company-as-code/tree/main/template">template
+  company</a>, then: <code>charta validate .</code></p>
+
+  <footer>
+    An open standard, created and stewarded by
+    <a href="https://pirol.ai">Pirol Labs</a> — Apache-2.0, plain files in your repo, no lock-in.
+    · <a href="https://github.com/Pirol-ai/company-as-code">GitHub</a>
+  </footer>
+</main>
+</body>
+</html>
