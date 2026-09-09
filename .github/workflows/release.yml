@@ -1,0 +1,143 @@
+name: release
+
+on:
+  push:
+    tags: ["v*"]
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    strategy:
+      matrix:
+        include:
+          - os: macos-14
+            target: aarch64-apple-darwin
+          - os: macos-13
+            target: x86_64-apple-darwin
+          - os: ubuntu-22.04
+            target: x86_64-unknown-linux-gnu
+          - os: windows-2022
+            target: x86_64-pc-windows-msvc
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dtolnay/rust-toolchain@stable
+        with:
+          targets: ${{ matrix.target }}
+      - name: Build
+        run: cargo build --release --manifest-path charta/Cargo.toml --target ${{ matrix.target }}
+      - name: Package (unix)
+        if: runner.os != 'Windows'
+        run: tar -czf charta-${{ matrix.target }}.tar.gz -C charta/target/${{ matrix.target }}/release charta
+      - name: Package (windows)
+        if: runner.os == 'Windows'
+        shell: pwsh
+        run: Compress-Archive -Path charta/target/${{ matrix.target }}/release/charta.exe -DestinationPath charta-${{ matrix.target }}.zip
+      - uses: actions/upload-artifact@v4
+        with:
+          name: charta-${{ matrix.target }}
+          path: charta-${{ matrix.target }}.*
+
+  release:
+    needs: build
+    runs-on: ubuntu-22.04
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          path: artifacts
+          merge-multiple: true
+      - name: Checksums
+        run: cd artifacts && shasum -a 256 * > SHA256SUMS
+      - name: Create GitHub release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh release create "$GITHUB_REF_NAME" artifacts/* \
+            --repo "$GITHUB_REPOSITORY" \
+            --title "charta $GITHUB_REF_NAME" \
+            --notes "Binaries for macOS (arm64/x64), Linux x64, Windows x64.
+          Install: \`brew install pirol-ai/tap/charta\` · \`npm i -g @pirol/charta\`"
+
+  tap:
+    needs: release
+    runs-on: ubuntu-22.04
+    steps:
+      - name: Check token
+        id: t
+        env:
+          TOKEN: ${{ secrets.TAP_PUSH_TOKEN }}
+        run: |
+          if [ -n "$TOKEN" ]; then echo "present=true" >> "$GITHUB_OUTPUT"; else
+            echo "present=false" >> "$GITHUB_OUTPUT"
+            echo "::notice::TAP_PUSH_TOKEN missing — Homebrew tap update skipped"
+          fi
+      - uses: actions/checkout@v4
+        if: steps.t.outputs.present == 'true'
+      - uses: actions/download-artifact@v4
+        if: steps.t.outputs.present == 'true'
+        with:
+          path: artifacts
+          merge-multiple: true
+      - uses: actions/checkout@v4
+        if: steps.t.outputs.present == 'true'
+        with:
+          repository: Pirol-ai/homebrew-tap
+          token: ${{ secrets.TAP_PUSH_TOKEN }}
+          path: tap-repo
+      - name: Render and push formula
+        if: steps.t.outputs.present == 'true'
+        run: |
+          V="${GITHUB_REF_NAME#v}"
+          SA=$(shasum -a 256 artifacts/charta-aarch64-apple-darwin.tar.gz | cut -d' ' -f1)
+          SX=$(shasum -a 256 artifacts/charta-x86_64-apple-darwin.tar.gz | cut -d' ' -f1)
+          SL=$(shasum -a 256 artifacts/charta-x86_64-unknown-linux-gnu.tar.gz | cut -d' ' -f1)
+          mkdir -p tap-repo/Formula
+          sed -e "s/__VERSION__/$V/g" \
+              -e "s/__SHA_DARWIN_ARM64__/$SA/" \
+              -e "s/__SHA_DARWIN_X64__/$SX/" \
+              -e "s/__SHA_LINUX_X64__/$SL/" \
+              tap/charta.rb.tmpl > tap-repo/Formula/charta.rb
+          cd tap-repo
+          git config user.name "Grischa-Jacobs"
+          git config user.email "241431204+Grischa84@users.noreply.github.com"
+          git add Formula/charta.rb
+          git commit -m "charta $V"
+          git push
+
+  npm:
+    needs: release
+    runs-on: ubuntu-22.04
+    steps:
+      - name: Check token
+        id: t
+        env:
+          TOKEN: ${{ secrets.NPM_TOKEN }}
+        run: |
+          if [ -n "$TOKEN" ]; then echo "present=true" >> "$GITHUB_OUTPUT"; else
+            echo "present=false" >> "$GITHUB_OUTPUT"
+            echo "::notice::NPM_TOKEN missing — npm publish skipped"
+          fi
+      - uses: actions/checkout@v4
+        if: steps.t.outputs.present == 'true'
+      - uses: actions/download-artifact@v4
+        if: steps.t.outputs.present == 'true'
+        with:
+          path: artifacts
+          merge-multiple: true
+      - uses: actions/setup-node@v4
+        if: steps.t.outputs.present == 'true'
+        with:
+          node-version: 20
+          registry-url: "https://registry.npmjs.org"
+      - name: Assemble packages
+        if: steps.t.outputs.present == 'true'
+        run: node scripts/npm-assemble.mjs "${GITHUB_REF_NAME#v}" artifacts npm/dist
+      - name: Publish (platform packages first, then @pirol/charta)
+        if: steps.t.outputs.present == 'true'
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+        run: |
+          for d in npm/dist/charta-*/; do (cd "$d" && npm publish --access public); done
+          (cd npm/dist/charta && npm publish --access public)
