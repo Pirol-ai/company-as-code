@@ -12,7 +12,7 @@ Reference toolchain for Company as Code. One Rust crate, single static binary.
 | `charta query backlinks <kind/id> [path]` | ✅ incoming edges |
 | `charta plan` | ⏳ graph diff between git refs — M3 |
 | `charta fmt` | ⏳ |
-| MCP server | ⏳ next M1 slice — resolve/validate/query for any MCP-capable agent |
+| `charta mcp [path]` | ✅ stdio MCP server: `charta_validate`, `charta_query` (orphans/backlinks), `charta_resolve` (envelope + body + backlinks) — every MCP-capable agent reads the company graph as tools |
 
 Conformance: `cargo test` runs every fixture in [`../conformance/fixtures/`](../conformance/fixtures/)
 — valid ones must be green, invalid ones must produce exactly the errors their `expected.json`

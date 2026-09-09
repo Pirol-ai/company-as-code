@@ -3,6 +3,8 @@ use std::collections::BTreeMap;
 use std::collections::BTreeSet;
 use std::path::{Path, PathBuf};
 
+pub mod mcp;
+
 pub const API_PREFIX: &str = "company-as-code.org/";
 pub const API_V0: &str = "company-as-code.org/v0";
 pub const CORE_KINDS: &[&str] = &[
@@ -26,6 +28,8 @@ pub struct Resource {
     pub fields: serde_yaml::Mapping,
     #[serde(skip)]
     pub prose_refs: Vec<String>,
+    #[serde(skip)]
+    pub body: String,
 }
 
 impl Resource {
@@ -341,6 +345,7 @@ pub fn load(root: &Path) -> Workspace {
             file: rel,
             fields: mapping,
             prose_refs: scan_prose_refs(body),
+            body: body.to_string(),
         });
     }
     ws
