@@ -10,7 +10,7 @@ Reference toolchain for Company as Code. One Rust crate, single static binary.
 | `charta graph [path]` | ✅ nodes + edges as JSON (typed refs and prose links) |
 | `charta query orphans [path]` | ✅ resources nothing references |
 | `charta query backlinks <kind/id> [path]` | ✅ incoming edges |
-| `charta plan` | ⏳ graph diff between git refs — M3 |
+| `charta plan [path] [--from <ref>] [--json]` | ✅ graph diff committed baseline vs. working tree: added / changed (with fields) / removed + impact set (who references what changed) + resulting error count |
 | `charta fmt` | ⏳ |
 | `charta mcp [path]` | ✅ stdio MCP server: `charta_validate`, `charta_query` (orphans/backlinks), `charta_resolve` (envelope + body + backlinks) — every MCP-capable agent reads the company graph as tools |
 
