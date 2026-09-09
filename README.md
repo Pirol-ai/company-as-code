@@ -9,9 +9,26 @@ are reviewable diffs (plan before apply), and agents — the actuator every earl
 lacked — execute described processes and detect drift between the described and the lived company.
 The semantics stay natural language; only the skeleton (types, references, policies) is validated.
 
-**Status: private dogfooding (M0).** The spec is being extracted from real usage on a real company
-repo, not designed up front. Nothing here is stable. It goes public together with a working
-validator and a demo — never before.
+**Status: private dogfooding.** The spec is being extracted from real usage on a real company
+repo, not designed up front. It goes public together with a working validator and a demo — never
+before.
+
+## Quickstart
+
+```
+# after the first release:  brew install pirol-ai/tap/charta  ·  npm i -g @pirol/charta
+# until then, build from source:
+cargo build --release --manifest-path charta/Cargo.toml
+
+cp -r template my-company && cd my-company
+charta validate .          # green — every reference resolves
+charta query orphans .     # what serves nothing?
+charta plan .              # what would your uncommitted change touch?
+charta mcp .               # give any MCP-capable agent the company graph
+```
+
+Then make [`template/`](template/) yours: describe what a new coworker would need on day one —
+every agent session is that coworker.
 
 ## Layout
 
