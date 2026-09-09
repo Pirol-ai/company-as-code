@@ -93,9 +93,9 @@ exposing the graph as tools, so agents read the company the way you do). Details
 
 ## OKF compatible
 
-Company as Code is a strict *profile* of Google's
-[Open Knowledge Format](https://github.com/GoogleCloudPlatform/knowledge-catalog/blob/main/okf/SPEC.md):
-every resource is a conformant OKF concept (`type`, `title`, `description`, `tags` carry OKF
+Company as Code is **100% compatible with Google's
+[Open Knowledge Format](https://github.com/GoogleCloudPlatform/knowledge-catalog/blob/main/okf/SPEC.md)** —
+a strict *profile* of it: every resource is a conformant OKF concept (`type`, `title`, `description`, `tags` carry OKF
 semantics; unknown keys are preserved both ways), and OKF concepts coexist untouched in the same
 tree. On top of OKF's tolerant substrate it adds identity (`id`), `type/id` addressing, typed
 references with mandatory resolution, and per-type required fields.
