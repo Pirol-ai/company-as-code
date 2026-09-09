@@ -4,6 +4,7 @@ use std::collections::BTreeSet;
 use std::path::{Path, PathBuf};
 
 pub mod mcp;
+pub mod plan;
 
 pub const API_PREFIX: &str = "company-as-code.org/";
 pub const API_V0: &str = "company-as-code.org/v0";
