@@ -1,0 +1,11 @@
+{
+  "name": "@pirol/charta",
+  "version": "0.0.0",
+  "description": "Company as Code — reference toolchain (validate, query, plan, MCP server)",
+  "bin": { "charta": "bin/charta.js" },
+  "files": ["bin"],
+  "license": "Apache-2.0",
+  "repository": { "type": "git", "url": "git+https://github.com/Pirol-ai/company-as-code.git" },
+  "homepage": "https://company-as-code.org",
+  "engines": { "node": ">=18" }
+}
