@@ -211,6 +211,9 @@ pub fn load(root: &Path) -> Workspace {
         .sort_by_file_name()
         .into_iter()
         .filter_entry(|e| {
+            if e.depth() == 0 {
+                return true; // never filter the root itself (e.g. `charta validate .`)
+            }
             let name = e.file_name().to_string_lossy();
             !(e.file_type().is_dir()
                 && (SKIP_DIRS.contains(&name.as_ref()) || name.starts_with('.')))
