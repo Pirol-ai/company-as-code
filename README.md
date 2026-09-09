@@ -2,11 +2,13 @@
 
 **Describe your company once — every AI agent works by your rules.**
 
-How your company works lives in your head, in chat threads, and in wiki pages nobody updates.
-That was survivable when a new coworker arrived once a quarter. Now every AI agent session is a
-new coworker — one that shows up a hundred times a day, knowing nothing. Company as Code is an
-open standard for writing it down once: goals, roles, processes, and policies as plain markdown
-files in git — readable by people, followed by agents, and verified like code.
+The knowledge about how your company works lives in your head, in chat messages, and in wiki
+pages that nobody updates. That was okay when a new coworker joined every few months. Now every
+AI agent session is a new coworker — it starts a hundred times a day, and it knows nothing.
+
+Company as Code is an open standard to write this knowledge down once: goals, roles, processes,
+and policies as plain markdown files in git. People can read them. Agents follow them. A small
+tool checks them like code.
 
 <!-- demo video lands here after the measurement runs -->
 
@@ -29,10 +31,13 @@ Trigger: 1st of each month. Steps: agent drafts invoices from delivery notes;
 ops reviews; send; log. Done when: all invoices sent and logged.
 ```
 
-The header is the graph: this process is *owned by* a role, *serves* a goal, is *bounded by* a
-policy — and none of those references can break silently, because the validator refuses them.
-The body is for the readers, human and machine. Files without the `api:` key are none of our
-business: your notes and docs live in the same repo, untouched.
+The header connects the files into a graph: this process is **owned by** a role, **serves** a
+goal, and **follows** a policy. The tool checks every reference. If a reference points to
+something that does not exist, validation fails. The text below the header is normal language —
+for people and for agents.
+
+Files without the `api:` key are ignored. Your notes and other documents can stay in the same
+repository.
 
 ## Install
 
@@ -44,77 +49,84 @@ brew install pirol-ai/tap/charta
 npm i -g @pirol/charta
 ```
 
-(macOS, Linux, Windows; binaries on the [releases page](https://github.com/Pirol-ai/company-as-code/releases).
-Building from source: `cargo build --release --manifest-path charta/Cargo.toml`.)
+Works on macOS, Linux, and Windows. Binaries are on the
+[releases page](https://github.com/Pirol-ai/company-as-code/releases). To build from source:
+`cargo build --release --manifest-path charta/Cargo.toml`.
 
 ## Try it in 30 seconds
 
-Watch a company break — loudly instead of silently:
+See what happens when a company description breaks:
 
 ```
 git clone https://github.com/Pirol-ai/company-as-code && cd company-as-code
 bash demo/demo.sh
 ```
 
-A role vanishes from a small roastery ([`demo/company/`](demo/company/) — browse it, it's just
-files); `charta validate` catches every dangling reference, and `charta plan` shows the blast
-radius *before* the change lands.
+The demo deletes a role from a small example company ([`demo/company/`](demo/company/) — open
+it, it is just files). `charta validate` finds every broken reference. `charta plan` shows what
+the change would affect — before it happens.
 
-Then start your own from the starter in [`template/`](template/):
+Then start your own company from [`template/`](template/):
 
 ```
 cp -r template my-company && cd my-company
 charta validate .          # green — every reference resolves
-charta query orphans .     # what does nothing serve?
-charta plan .              # what would your uncommitted change touch?
+charta query orphans .     # which resources does nothing reference?
+charta plan .              # what would your uncommitted change affect?
 charta mcp .               # serve the company graph to any MCP-capable agent
 ```
 
-Describe what a new coworker would need on day one — every agent session is that coworker. Grow
-it from incidents, not ambition.
+Write down what a new coworker would need to know on day one — every agent session is that new
+coworker. Start small. Add more only when you need it.
 
 ## The toolchain
 
-`charta` is one small binary (Apache-2.0): `validate` (three conformance levels: well-formed →
-references resolve → required fields), `graph` and `query` (orphans, backlinks — JSON out, no
-query language), `plan` (diff against a git baseline, with impact set), and `mcp` (an MCP server
-exposing the graph as tools, so agents read the company the way you do). Details in
-[`charta/`](charta/).
+`charta` is one small binary (Apache-2.0):
+
+| command | what it does |
+|---|---|
+| `charta validate` | checks the description: files are well-formed, every reference resolves, required fields exist |
+| `charta graph` / `charta query` | the graph as JSON; find orphans and backlinks |
+| `charta plan` | compares your working tree with the last git commit and shows what a change would affect |
+| `charta mcp` | an MCP server — AI agents can read and query the company graph as tools |
+
+Details in [`charta/`](charta/).
 
 ## Layout
 
 | Path | What |
 |---|---|
-| [`spec/`](spec/) | The format: purpose, envelope, types, references, conformance levels. Working draft; freezes at 1.0. |
-| [`conformance/`](conformance/) | Executable fixtures — the suite, not the prose, is the standard. |
+| [`spec/`](spec/) | The format: purpose, header fields, types, references, conformance levels. Working draft; frozen at 1.0. |
+| [`conformance/`](conformance/) | Test fixtures. The test suite defines the standard, not the prose. |
 | [`charta/`](charta/) | The reference toolchain (Rust). |
-| [`template/`](template/) | Minimal starter company. |
-| [`demo/`](demo/) | A browsable example company and the 30-second demo. |
+| [`template/`](template/) | A minimal starter company. |
+| [`demo/`](demo/) | An example company and the 30-second demo. |
 
 ## OKF compatible
 
 Company as Code is **100% compatible with Google's
-[Open Knowledge Format](https://github.com/GoogleCloudPlatform/knowledge-catalog/blob/main/okf/SPEC.md)** —
-a strict *profile* of it: every resource is a conformant OKF concept (`type`, `title`, `description`, `tags` carry OKF
-semantics; unknown keys are preserved both ways), and OKF concepts coexist untouched in the same
-tree. On top of OKF's tolerant substrate it adds identity (`id`), `type/id` addressing, typed
-references with mandatory resolution, and per-type required fields.
+[Open Knowledge Format (OKF)](https://github.com/GoogleCloudPlatform/knowledge-catalog/blob/main/okf/SPEC.md)**.
+Every resource file is also a valid OKF concept. The fields `type`, `title`, `description`, and
+`tags` have the same meaning as in OKF. Unknown fields are kept, never deleted. OKF files can
+live in the same repository; charta ignores them. On top of OKF, Company as Code adds: an `id`,
+addressing (`type/id`), references that must resolve, and required fields per type.
 
-## Design tenets
+## Design rules
 
-1. **Prose primary, schema minimal.** Semantics are one page of natural language; structure lives
-   in the header. Every added field is a tax on adoption.
-2. **Validate the skeleton, never the prose.** Formal notations died of the precision they
-   demanded; agents tolerate ambiguity. Only the references and required fields are enforced.
-3. **The description belongs to the company, not to any tool.** The on-disk format is the
-   interchange format: export is `git clone`.
-4. **Ignore and preserve.** Unknown types and fields are kept verbatim; round-trip idempotence is
-   a conformance requirement.
-5. **No DSL.** Markdown + YAML header; no invented query language. Fixed verbs, JSON out; agents
-   compose.
+1. **Text first, schema small.** The meaning lives in normal language. Structure lives in the
+   header. Every extra field makes adoption harder.
+2. **Check the structure, not the text.** Strict process notations failed because they demanded
+   too much precision from people. Agents can handle normal language. Only references and
+   required fields are enforced.
+3. **The description belongs to you, not to a tool.** The files on disk are the exchange format.
+   Export is `git clone`.
+4. **Keep what you do not know.** Unknown types and fields are preserved exactly. Read and write
+   must not change a file.
+5. **No new language.** Markdown and YAML — nothing to learn. No query language: fixed commands,
+   JSON output, agents combine them.
 
 ## License
 
 Toolchain and fixtures: Apache-2.0 ([LICENSE](LICENSE)). Specification text: CC-BY-4.0
-([spec/LICENSE](spec/LICENSE)). An open standard, created and stewarded by
+([spec/LICENSE](spec/LICENSE)). An open standard, created and maintained by
 [Pirol Labs](https://pirol.ai).
