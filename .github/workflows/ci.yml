@@ -1,0 +1,22 @@
+name: ci
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  charta:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dtolnay/rust-toolchain@stable
+      - uses: Swatinem/rust-cache@v2
+        with:
+          workspaces: charta
+      - name: Conformance suite
+        run: cargo test --manifest-path charta/Cargo.toml
+      - name: Format check
+        run: cargo fmt --manifest-path charta/Cargo.toml --check
+      - name: Validate fixture workspace
+        run: cargo run --manifest-path charta/Cargo.toml -q -- validate conformance/fixtures/valid/minimal
