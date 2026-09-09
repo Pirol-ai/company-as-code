@@ -5,7 +5,8 @@ fn usage() -> ExitCode {
     eprintln!(
         "charta — reference toolchain for Company as Code\n\n\
          Usage:\n  charta validate [path] [--json]\n  charta graph [path]\n  \
-         charta query orphans [path]\n  charta query backlinks <kind/id> [path]\n"
+         charta query orphans [path]\n  charta query backlinks <type/id> [path]\n  \
+         charta mcp [path]\n"
     );
     ExitCode::from(2)
 }
@@ -77,6 +78,16 @@ fn main() -> ExitCode {
             let g = charta::graph(&ws);
             println!("{}", serde_json::to_string_pretty(&g).unwrap());
             ExitCode::SUCCESS
+        }
+        "mcp" => {
+            let root = path_arg(1);
+            match charta::mcp::serve(root) {
+                Ok(()) => ExitCode::SUCCESS,
+                Err(e) => {
+                    eprintln!("mcp server error: {e}");
+                    ExitCode::FAILURE
+                }
+            }
         }
         "query" => match positional.get(1).map(|s| s.as_str()) {
             Some("orphans") => {
