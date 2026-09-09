@@ -1,0 +1,10 @@
+{"version":3,"term":{"cols":112,"rows":26},"timestamp":1788988947,"command":"bash demo.sh","env":{"SHELL":"/bin/zsh"}}
+[0.065, "o", "# A small coffee roastery, described in plain files — verified like code.\r\n\r\n$ charta validate .\r\n"]
+[0.003, "o", "11 resources · 0 errors · 0 warnings\r\n"]
+[3.007, "o", "\r\n# Sam quits. Someone deletes the Ops role…\r\n"]
+[0.004, "o", "\r\n$ charta validate .\r\n"]
+[0.006, "o", "L1 error [goal/five-star-service] owner: goal/five-star-service → owner: 'role/ops' does not exist\r\nL1 error [process/customer-follow-up] owner: process/customer-follow-up → owner: 'role/ops' does not exist\r\nL1 error [process/invoicing] owner: process/invoicing → owner: 'role/ops' does not exist\r\nL1 error [process/weekly-roast-plan] owner: process/weekly-roast-plan → owner: 'role/ops' does not exist\r\n10 resources · 4 errors · 0 warnings\r\n"]
+[3.009, "o", "\r\n# …and before anything lands, plan shows what that would actually touch:\r\n\r\n$ charta plan .\r\n"]
+[0.023, "o", "- role/ops\r\n! goal/five-star-service    owner → role/ops\r\n! process/customer-follow-up    owner → role/ops\r\n! process/invoicing    owner → role/ops\r\n! process/weekly-roast-plan    owner → role/ops\r\n0 added · 0 changed · 1 removed · 4 impacted · resulting errors: 4\r\n"]
+[3.007, "o", "\r\n# A goal unowned, three processes ownerless — visible before the change, not weeks after.\r\n# Nothing in this company can break silently anymore.\r\n"]
+[0.001, "x", "0"]

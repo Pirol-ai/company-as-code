@@ -12,7 +12,7 @@ cp -r "$SRC/." "$DIR"
 cd "$DIR"
 git init -q && git add -A && git -c user.name=demo -c user.email=demo@example.com commit -qm "day one"
 
-step() { echo; echo "\$ $*"; "$@" || true; sleep 1; }
+step() { echo; echo "\$ $*"; "$@" || true; sleep "${DEMO_PAUSE:-1}"; }
 
 echo "# A small coffee roastery, described in plain files — verified like code."
 step charta validate .

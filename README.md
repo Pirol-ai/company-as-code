@@ -10,7 +10,7 @@ Company as Code is an open standard to write this knowledge down once: goals, ro
 and policies as plain markdown files in git. People can read them. Agents follow them. A small
 tool checks them like code.
 
-<!-- demo video lands here after the measurement runs -->
+![charta demo: a role gets deleted, validate finds every broken reference, plan shows what the change would affect](demo/demo.gif)
 
 ## What it looks like
 

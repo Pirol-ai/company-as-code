@@ -17,3 +17,16 @@ bash demo.sh
 
 Nothing outside a temp directory is touched. Looking for a starting point for **your** company
 instead? That's [`../template/`](../template/).
+
+## Regenerating the video
+
+`demo.gif` / `demo.mp4` (embedded in the root README) are rendered from a recording of this
+script. To regenerate after a change:
+
+```
+DEMO_PAUSE=3 asciinema rec --overwrite --window-size 112x26 -c "bash demo.sh" demo.cast
+agg --theme 000000,e6e6e6,000000,ff6b60,2fd158,e8a344,57aaf7,c792ea,56b6c2,e6e6e6,5c6370,ff6b60,2fd158,e8a344,57aaf7,c792ea,56b6c2,ffffff --font-size 20 demo.cast demo.gif
+ffmpeg -y -i demo.gif -movflags faststart -pix_fmt yuv420p -vf "scale=trunc(iw/2)*2:trunc(ih/2)*2" demo.mp4
+```
+
+(`brew install asciinema agg ffmpeg`. The theme is pure black with the site's amber as accent.)
