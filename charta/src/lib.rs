@@ -518,3 +518,54 @@ pub fn orphans(g: &Graph) -> Vec<String> {
 pub fn backlinks<'g>(g: &'g Graph, target: &str) -> Vec<&'g Edge> {
     g.edges.iter().filter(|e| e.to == target).collect()
 }
+
+/// Mermaid flowchart (GitHub renders this natively in markdown).
+/// Typed references are solid labeled arrows; prose links are dotted.
+pub fn to_mermaid(g: &Graph) -> String {
+    let node_id = |addr: &str| addr.replace(['-', '/', '.'], "_");
+    let mut out = String::from("flowchart LR\n");
+    for n in &g.nodes {
+        let addr = format!("{}/{}", n.r#type, n.id);
+        out.push_str(&format!("  {}[\"{}\"]\n", node_id(&addr), addr));
+    }
+    for e in &g.edges {
+        if e.field == "prose" {
+            out.push_str(&format!(
+                "  {} -. prose .-> {}\n",
+                node_id(&e.from),
+                node_id(&e.to)
+            ));
+        } else {
+            out.push_str(&format!(
+                "  {} -->|{}| {}\n",
+                node_id(&e.from),
+                e.field,
+                node_id(&e.to)
+            ));
+        }
+    }
+    out
+}
+
+/// Graphviz DOT — the universal exchange format (dot -Tsvg renders it anywhere).
+pub fn to_dot(g: &Graph) -> String {
+    let mut out = String::from(
+        "digraph company {\n  rankdir=LR;\n  node [shape=box, fontname=\"Helvetica\"];\n",
+    );
+    for n in &g.nodes {
+        out.push_str(&format!("  \"{}/{}\";\n", n.r#type, n.id));
+    }
+    for e in &g.edges {
+        let style = if e.field == "prose" {
+            ", style=dashed"
+        } else {
+            ""
+        };
+        out.push_str(&format!(
+            "  \"{}\" -> \"{}\" [label=\"{}\"{}];\n",
+            e.from, e.to, e.field, style
+        ));
+    }
+    out.push_str("}\n");
+    out
+}

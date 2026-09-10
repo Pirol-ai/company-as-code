@@ -1,6 +1,13 @@
 # Changelog
 
-## Unreleased (targeting v0.1.0)
+## v0.2.0
+
+- `charta graph --format mermaid` — the company graph as a Mermaid flowchart; GitHub renders it
+  natively in markdown (typed references solid, prose links dotted)
+- `charta graph --format dot` — Graphviz DOT output for every other visualization tool
+- README: the example company embedded as a rendered graph
+
+## v0.1.0
 
 First public release of the Company as Code spec (working draft, frozen as v0 at this release)
 and the charta toolchain:

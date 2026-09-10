@@ -4,7 +4,8 @@ use std::process::ExitCode;
 fn usage() -> ExitCode {
     eprintln!(
         "charta — reference toolchain for Company as Code\n\n\
-         Usage:\n  charta validate [path] [--json]\n  charta graph [path]\n  \
+         Usage:\n  charta validate [path] [--json]\n  \
+         charta graph [path] [--format json|mermaid|dot]\n  \
          charta query orphans [path]\n  charta query backlinks <type/id> [path]\n  \
          charta plan [path] [--from <ref>] [--json]\n  charta mcp [path]\n"
     );
@@ -15,6 +16,7 @@ fn main() -> ExitCode {
     let raw: Vec<String> = std::env::args().skip(1).collect();
     let mut json = false;
     let mut from = String::from("HEAD");
+    let mut format = String::from("json");
     let mut positional: Vec<String> = Vec::new();
     let mut i = 0;
     while i < raw.len() {
@@ -24,6 +26,13 @@ fn main() -> ExitCode {
                 i += 1;
                 match raw.get(i) {
                     Some(v) => from = v.clone(),
+                    None => return usage(),
+                }
+            }
+            "--format" => {
+                i += 1;
+                match raw.get(i) {
+                    Some(v) => format = v.clone(),
                     None => return usage(),
                 }
             }
@@ -93,7 +102,12 @@ fn main() -> ExitCode {
             let mut ws = charta::load(&root);
             charta::validate(&mut ws);
             let g = charta::graph(&ws);
-            println!("{}", serde_json::to_string_pretty(&g).unwrap());
+            match format.as_str() {
+                "json" => println!("{}", serde_json::to_string_pretty(&g).unwrap()),
+                "mermaid" => print!("{}", charta::to_mermaid(&g)),
+                "dot" => print!("{}", charta::to_dot(&g)),
+                _ => return usage(),
+            }
             ExitCode::SUCCESS
         }
         "plan" => {

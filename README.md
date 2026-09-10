@@ -67,6 +67,38 @@ open it, it is just files). It deletes the Operations role — the person who ru
 customer support. Suddenly three processes have no owner. `charta validate` finds every broken
 reference. `charta plan` shows what the change would affect — before it happens.
 
+This is the same company as a graph — generated with `charta graph . --format mermaid`, rendered
+by GitHub:
+
+```mermaid
+flowchart LR
+  company_aurora_roasters["company/aurora-roasters"]
+  goal_five_star_service["goal/five-star-service"]
+  goal_wholesale_growth["goal/wholesale-growth"]
+  policy_agent_autonomy["policy/agent-autonomy"]
+  policy_four_eyes_payments["policy/four-eyes-payments"]
+  process_customer_follow_up["process/customer-follow-up"]
+  process_invoicing["process/invoicing"]
+  process_weekly_roast_plan["process/weekly-roast-plan"]
+  role_agent["role/agent"]
+  role_founder["role/founder"]
+  role_ops["role/ops"]
+  goal_five_star_service -->|owner| role_ops
+  goal_wholesale_growth -->|owner| role_founder
+  process_customer_follow_up -->|owner| role_ops
+  process_customer_follow_up -->|serves| goal_five_star_service
+  process_invoicing -->|owner| role_ops
+  process_invoicing -->|serves| goal_wholesale_growth
+  process_invoicing -->|policies| policy_four_eyes_payments
+  process_weekly_roast_plan -->|owner| role_ops
+  process_weekly_roast_plan -->|serves| goal_wholesale_growth
+  process_weekly_roast_plan -. prose .-> role_agent
+  role_agent -. prose .-> policy_agent_autonomy
+```
+
+Delete `role/ops` and you can see the problem before the tool tells you: four arrows point at it.
+`--format dot` gives the same graph as Graphviz DOT for every other tool.
+
 Then start your own company from [`template/`](template/):
 
 ```
@@ -93,7 +125,7 @@ Start small. Add more only when you need it.
 | command | what it does |
 |---|---|
 | `charta validate` | checks the description: files are well-formed, every reference resolves, required fields exist |
-| `charta graph` / `charta query` | the graph as JSON; find orphans and backlinks |
+| `charta graph` / `charta query` | the graph as JSON, Mermaid, or Graphviz DOT (`--format`); find orphans and backlinks |
 | `charta plan` | compares your working tree with the last git commit and shows what a change would affect |
 | `charta mcp` | an MCP server — AI agents can read and query the company graph as tools |
 

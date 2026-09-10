@@ -7,7 +7,7 @@ Reference toolchain for Company as Code. One Rust crate, single static binary.
 | verb | status |
 |---|---|
 | `charta validate [path] [--json]` | ✅ L0 (well-formed: manifest, envelope, id format, uniqueness) · L1 (referential integrity, typed + prose refs) · L2 (per-kind required fields). Exit 1 on errors. |
-| `charta graph [path]` | ✅ nodes + edges as JSON (typed refs and prose links) |
+| `charta graph [path]` | ✅ nodes + edges as JSON, Mermaid (`--format mermaid`, GitHub-rendered), or Graphviz DOT (`--format dot`) |
 | `charta query orphans [path]` | ✅ resources nothing references |
 | `charta query backlinks <kind/id> [path]` | ✅ incoming edges |
 | `charta plan [path] [--from <ref>] [--json]` | ✅ graph diff committed baseline vs. working tree: added / changed (with fields) / removed + impact set (who references what changed) + resulting error count |
