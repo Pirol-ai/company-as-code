@@ -1,0 +1,11 @@
+{
+  "name": "@pirol/create-charta",
+  "version": "0.0.0",
+  "description": "Start a Company as Code description: npm init @pirol/charta",
+  "bin": { "create-charta": "bin/create-charta.js" },
+  "files": ["bin"],
+  "license": "Apache-2.0",
+  "repository": { "type": "git", "url": "git+https://github.com/Pirol-ai/company-as-code.git" },
+  "homepage": "https://company-as-code.org",
+  "engines": { "node": ">=18" }
+}

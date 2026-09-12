@@ -1,5 +1,11 @@
 # Changelog
 
+## v0.4.0
+
+- `charta init --name "Acme GmbH"` — set the company name directly; without it the manifest gets an
+  obvious placeholder (`Acme Inc.`) instead of a guessed one
+- `npm init @pirol/charta` — the npm-native way to start (new `@pirol/create-charta` package)
+
 ## v0.3.0
 
 - `charta init` — creates `company.yaml` in the current directory (name defaults to the directory

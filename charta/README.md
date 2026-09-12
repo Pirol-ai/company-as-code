@@ -6,7 +6,7 @@ Reference toolchain for Company as Code. One Rust crate, single static binary.
 
 | verb | status |
 |---|---|
-| `charta init [path]` | ✅ creates `company.yaml` — marks the root of a company description; refuses to overwrite an existing one |
+| `charta init [path] [--name "…"]` | ✅ creates `company.yaml` — marks the root of a company description; placeholder name without `--name`; refuses to overwrite an existing one |
 | `charta validate [path] [--json]` | ✅ L0 (well-formed: manifest, envelope, id format, uniqueness) · L1 (referential integrity, typed + prose refs) · L2 (per-kind required fields). Exit 1 on errors. |
 | `charta graph [path]` | ✅ nodes + edges as JSON, Mermaid (`--format mermaid`, GitHub-rendered), or Graphviz DOT (`--format dot`) |
 | `charta query orphans [path]` | ✅ resources nothing references |

@@ -4,7 +4,8 @@ use std::process::ExitCode;
 fn usage() -> ExitCode {
     eprintln!(
         "charta — reference toolchain for Company as Code\n\n\
-         Usage:\n  charta init [path]\n  charta validate [path] [--json]\n  \
+         Usage:\n  charta init [path] [--name \"Your Company\"]\n  \
+         charta validate [path] [--json]\n  \
          charta graph [path] [--format json|mermaid|dot]\n  \
          charta query orphans [path]\n  charta query backlinks <type/id> [path]\n  \
          charta plan [path] [--from <ref>] [--json]\n  charta mcp [path]\n"
@@ -17,6 +18,7 @@ fn main() -> ExitCode {
     let mut json = false;
     let mut from = String::from("HEAD");
     let mut format = String::from("json");
+    let mut name: Option<String> = None;
     let mut positional: Vec<String> = Vec::new();
     let mut i = 0;
     while i < raw.len() {
@@ -33,6 +35,13 @@ fn main() -> ExitCode {
                 i += 1;
                 match raw.get(i) {
                     Some(v) => format = v.clone(),
+                    None => return usage(),
+                }
+            }
+            "--name" => {
+                i += 1;
+                match raw.get(i) {
+                    Some(v) => name = Some(v.clone()),
                     None => return usage(),
                 }
             }
@@ -64,17 +73,27 @@ fn main() -> ExitCode {
                 eprintln!("init: cannot create {}: {e}", root.display());
                 return ExitCode::FAILURE;
             }
-            // Default the name to the directory it lives in; the founder edits one line.
-            let name = std::fs::canonicalize(&root)
-                .ok()
-                .and_then(|p| p.file_name().map(|s| s.to_string_lossy().into_owned()))
-                .unwrap_or_else(|| "My Company".to_string());
-            let contents = format!("api: {}\nname: {name}\nextensions: []\n", charta::API_V0);
+            // Without --name, write an obvious placeholder: a guessed name looks almost
+            // right and stays wrong, a placeholder asks to be replaced.
+            let placeholder = "Acme Inc.";
+            let company_name = name.as_deref().unwrap_or(placeholder);
+            let contents = format!(
+                "api: {}\nname: {}\nextensions: []\n",
+                charta::API_V0,
+                if company_name.contains(':') || company_name.contains('#') {
+                    format!("{company_name:?}")
+                } else {
+                    company_name.to_string()
+                }
+            );
             if let Err(e) = std::fs::write(&manifest, contents) {
                 eprintln!("init: cannot write {}: {e}", manifest.display());
                 return ExitCode::FAILURE;
             }
-            println!("Created {} (name: {name})", manifest.display());
+            println!("Created {} (name: {company_name})", manifest.display());
+            if name.is_none() {
+                println!("Replace the placeholder name, or run init with: --name \"Your Company\"");
+            }
             println!(
                 "This marks the root of your company description. Now describe your company —\n\
                  tell your agent how it works, or write the first resource file yourself.\n\

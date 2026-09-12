@@ -57,4 +57,17 @@ const base = JSON.parse(readFileSync("npm/charta/package.json", "utf8"));
 base.version = version;
 base.optionalDependencies = optional;
 writeFileSync(`${mainDir}/package.json`, JSON.stringify(base, null, 2) + "\n");
-console.log(`assembled ${Object.keys(targets).length} platform packages + @pirol/charta@${version} in ${out}`);
+
+// `npm init @pirol/charta` — thin initializer that calls `charta init`
+const createDir = `${out}/create-charta`;
+mkdirSync(`${createDir}/bin`, { recursive: true });
+copyFileSync("npm/create-charta/bin/create-charta.js", `${createDir}/bin/create-charta.js`);
+copyFileSync("npm/create-charta/README.md", `${createDir}/README.md`);
+const createBase = JSON.parse(readFileSync("npm/create-charta/package.json", "utf8"));
+createBase.version = version;
+createBase.dependencies = { "@pirol/charta": version };
+writeFileSync(`${createDir}/package.json`, JSON.stringify(createBase, null, 2) + "\n");
+
+console.log(
+  `assembled ${Object.keys(targets).length} platform packages + @pirol/charta@${version} + @pirol/create-charta@${version} in ${out}`
+);

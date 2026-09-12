@@ -105,8 +105,14 @@ You do not need this repository — only the installed tool:
 
 ```
 mkdir my-company && cd my-company && git init
-charta init                # creates company.yaml: the root of your description
-charta validate .          # check it any time — every reference must resolve
+charta init --name "Acme GmbH"   # creates company.yaml: the root of your description
+charta validate .                # check it any time — every reference must resolve
+```
+
+With npm, you can start without installing anything:
+
+```
+npm init @pirol/charta -- --name "Acme GmbH"
 ```
 
 The other commands, once you have a few files:

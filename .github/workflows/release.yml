@@ -141,3 +141,4 @@ jobs:
         run: |
           for d in npm/dist/charta-*/; do (cd "$d" && npm publish --access public); done
           (cd npm/dist/charta && npm publish --access public)
+          (cd npm/dist/create-charta && npm publish --access public)
