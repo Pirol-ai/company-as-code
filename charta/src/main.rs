@@ -4,7 +4,7 @@ use std::process::ExitCode;
 fn usage() -> ExitCode {
     eprintln!(
         "charta — reference toolchain for Company as Code\n\n\
-         Usage:\n  charta validate [path] [--json]\n  \
+         Usage:\n  charta init [path]\n  charta validate [path] [--json]\n  \
          charta graph [path] [--format json|mermaid|dot]\n  \
          charta query orphans [path]\n  charta query backlinks <type/id> [path]\n  \
          charta plan [path] [--from <ref>] [--json]\n  charta mcp [path]\n"
@@ -53,6 +53,35 @@ fn main() -> ExitCode {
     };
 
     match cmd.as_str() {
+        "init" => {
+            let root = path_arg(1);
+            let manifest = root.join("company.yaml");
+            if manifest.exists() {
+                eprintln!("init: {} already exists", manifest.display());
+                return ExitCode::FAILURE;
+            }
+            if let Err(e) = std::fs::create_dir_all(&root) {
+                eprintln!("init: cannot create {}: {e}", root.display());
+                return ExitCode::FAILURE;
+            }
+            // Default the name to the directory it lives in; the founder edits one line.
+            let name = std::fs::canonicalize(&root)
+                .ok()
+                .and_then(|p| p.file_name().map(|s| s.to_string_lossy().into_owned()))
+                .unwrap_or_else(|| "My Company".to_string());
+            let contents = format!("api: {}\nname: {name}\nextensions: []\n", charta::API_V0);
+            if let Err(e) = std::fs::write(&manifest, contents) {
+                eprintln!("init: cannot write {}: {e}", manifest.display());
+                return ExitCode::FAILURE;
+            }
+            println!("Created {} (name: {name})", manifest.display());
+            println!(
+                "This marks the root of your company description. Now describe your company —\n\
+                 tell your agent how it works, or write the first resource file yourself.\n\
+                 Check it any time with: charta validate ."
+            );
+            ExitCode::SUCCESS
+        }
         "validate" => {
             let root = path_arg(1);
             let mut ws = charta::load(&root);

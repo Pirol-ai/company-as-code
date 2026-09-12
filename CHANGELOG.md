@@ -1,5 +1,10 @@
 # Changelog
 
+## v0.3.0
+
+- `charta init` — creates `company.yaml` in the current directory (name defaults to the directory
+  name). No repository needed to start: install, `init`, describe.
+
 ## v0.2.0
 
 - `charta graph --format mermaid` — the company graph as a Mermaid flowchart; GitHub renders it

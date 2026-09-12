@@ -99,15 +99,27 @@ flowchart LR
 Delete `role/ops` and you can see the problem before the tool tells you: four arrows point at it.
 `--format dot` gives the same graph as Graphviz DOT for every other tool.
 
-Then start your own company from [`template/`](template/):
+## Start your own
+
+You do not need this repository — only the installed tool:
 
 ```
-cp -r template my-company && cd my-company
-charta validate .          # green — every reference resolves
+mkdir my-company && cd my-company && git init
+charta init                # creates company.yaml: the root of your description
+charta validate .          # check it any time — every reference must resolve
+```
+
+The other commands, once you have a few files:
+
+```
 charta query orphans .     # which resources does nothing reference?
 charta plan .              # what would your uncommitted change affect?
+charta graph . --format mermaid   # the graph, rendered by GitHub
 charta mcp .               # serve the company graph to any MCP-capable agent
 ```
+
+Want a filled-in starting point instead of an empty one? Copy [`template/`](template/) from this
+repository.
 
 **You do not write this alone — your agent writes it with you.** Tell your agent how your
 company works, in your own words. The agent writes the files, runs `charta validate`, and fixes
