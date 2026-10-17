@@ -1,5 +1,16 @@
 # Changelog
 
+## v0.5.0
+
+- **Ignore and preserve is now proven, not promised.** Resources keep their frontmatter as
+  verbatim text and `charta::write_resource` passes it through, so reading and writing a file
+  returns it byte for byte — comments, key order and quoting included. Two conformance tests
+  assert it across every fixture.
+- New fixture `valid/extensions`: namespaced extension content in both places it can appear —
+  a frontmatter key (`x-coos/steps`) and a fenced body block.
+- Spec: a documented convention for extension content in the body (fenced block, namespaced info
+  string), and sharper wording for the round-trip requirement.
+
 ## v0.4.0
 
 - `charta init --name "Acme GmbH"` — set the company name directly; without it the manifest gets an
