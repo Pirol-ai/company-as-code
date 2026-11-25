@@ -132,10 +132,36 @@ A validator conforms at level N if it passes all fixtures for levels ≤ N.
 - Extension types and fields are namespaced (`x-coos/approval-card`, `x-firm/opportunity`).
 - **Ignore and preserve:** an implementation MUST NOT fail on unknown types or fields and MUST
   preserve them verbatim on write.
-- **Round-trip idempotence:** read → write → read must be byte-stable for conforming input. This
-  is a conformance requirement.
+- **Round-trip idempotence:** reading a resource and writing it back MUST return the file
+  unchanged, byte for byte — including comments, key order and quoting style. The reference
+  implementation achieves this by never re-serializing what it did not change: the frontmatter is
+  emitted as the text it was read as. This is a conformance requirement, asserted by the fixtures
+  in `conformance/fixtures/` (see `valid/extensions`).
 - `api` versions the envelope, not your company: bumps are rare and migration is a documented,
   mechanical step.
+
+### Extension content in the body
+
+A runtime may need structured content a validator must not touch — an executable form of a
+process, a rendering hint, a cached computation. It belongs in a **fenced block whose info string
+is the namespace**:
+
+````markdown
+```x-coos/steps
+welcome-call -> decision(Enterprise plan?)
+  yes -> provisioning
+  no  -> self-serve
+```
+````
+
+Rules: the info string names the owning namespace, exactly as frontmatter keys do; the block is
+**prose to charta** — never parsed, never validated, preserved verbatim; and a namespace owns its
+blocks, so two runtimes writing into the same body do not collide. Everything outside such blocks
+remains the natural-language body that people and agents read.
+
+This is a convention, not a new feature: §3 already makes the whole body prose, and
+ignore-and-preserve already protects it. The convention only exists so that a second runtime has
+somewhere else to write.
 
 ## 8. OKF compatibility
 

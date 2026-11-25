@@ -31,6 +31,10 @@ pub struct Resource {
     pub prose_refs: Vec<String>,
     #[serde(skip)]
     pub body: String,
+    /// Everything from the opening `---` through the closing delimiter, verbatim.
+    /// Kept as text, never re-serialized: that is what makes ignore-and-preserve real.
+    #[serde(skip)]
+    pub header: String,
 }
 
 impl Resource {
@@ -342,6 +346,8 @@ pub fn load(root: &Path) -> Workspace {
         } else {
             seen.insert(addr, rel.clone());
         }
+        // `body` is a suffix slice of `text`, so everything before it is the header.
+        let header = text[..text.len() - body.len()].to_string();
         ws.resources.push(Resource {
             r#type: ty,
             id,
@@ -350,6 +356,7 @@ pub fn load(root: &Path) -> Workspace {
             fields: mapping,
             prose_refs: scan_prose_refs(body),
             body: body.to_string(),
+            header,
         });
     }
     ws
@@ -513,6 +520,16 @@ pub fn orphans(g: &Graph) -> Vec<String> {
         .map(|n| format!("{}/{}", n.r#type, n.id))
         .filter(|a| !referenced.contains(a))
         .collect()
+}
+
+/// Serialize a resource back to file contents.
+///
+/// charta never rewrites what it did not change: the frontmatter is emitted as the
+/// text it was read as, and the body is passed through untouched. Unknown fields,
+/// extension keys, comments, key order and quoting all survive by construction —
+/// the conformance suite asserts the result is byte-identical to the input.
+pub fn write_resource(r: &Resource) -> String {
+    format!("{}{}", r.header, r.body)
 }
 
 pub fn backlinks<'g>(g: &'g Graph, target: &str) -> Vec<&'g Edge> {
